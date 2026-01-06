@@ -46,5 +46,10 @@ namespace PulseAPI.Client
             var posts = await _httpClient.GetFromJsonAsync<List<ExternalPostDto>>($"/posts");
             return posts ?? new List<ExternalPostDto>();
         }
+        public async Task<List<ExternalTodoDto>> GetTodosAsync()
+        {
+            var todos = await _httpClient.GetFromJsonAsync<List<ExternalTodoDto>>($"/todos");
+            return todos ?? new List<ExternalTodoDto>();
+        }
     }
 }

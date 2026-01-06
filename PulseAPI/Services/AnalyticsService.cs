@@ -2,6 +2,7 @@
 using PulseAPI.Models.Enums;
 using PulseAPI.Models.External;
 using PulseAPI.Models.Responses;
+using System.Collections.Generic;
 
 namespace PulseAPI.Services
 {
@@ -65,8 +66,8 @@ namespace PulseAPI.Services
             {
                 int postsCount = postsCountPerUsers.ContainsKey(user.Id) ? postsCountPerUsers[user.Id] : 0;
                 ActivityLevel userLevel = GetActivityLevel(postsCount);
-                response.Add(new UserActivityResponse { 
-                    UserId = user.Id, UserName = user.Name, ActivityLevelUser = userLevel, PostsCount = postsCount});
+                response.Add(new UserActivityResponse {
+                    UserId = user.Id, UserName = user.Name, ActivityLevelUser = userLevel, PostsCount = postsCount });
 
             }
             return response;
@@ -102,8 +103,35 @@ namespace PulseAPI.Services
                     ActivityLevelUser = GetActivityLevel(postsCount)
                 });
             }
-            
+
             return response;
         }
+
+        public async Task<List<UserTaskReportResponse>> GetUserTaskReportAsync()
+        {
+            var todos = await _client.GetTodosAsync();
+            var users = await _client.GetUsersAsync();
+            var relevantUsers = users.Where(u => u.Email.EndsWith(".org", StringComparison.OrdinalIgnoreCase) ||
+                                                 u.Email.EndsWith(".net", StringComparison.OrdinalIgnoreCase));
+            var todosForUsers = todos.GroupBy(t => t.UserId).ToDictionary(g => g.Key, g => g.Count());
+            var completedTasksForUser = todos.Where(t => t.Completed).GroupBy(t => t.UserId).ToDictionary(g => g.Key, g => g.Count());
+            List<UserTaskReportResponse> response = new List<UserTaskReportResponse>();
+
+            foreach (var user in relevantUsers)
+            {
+                int totalTasks = todosForUsers.ContainsKey(user.Id) ? todosForUsers[user.Id] : 0;
+                int completedTasks = completedTasksForUser.ContainsKey(user.Id) ? completedTasksForUser[user.Id] : 0;
+                double completionPercent = totalTasks == 0 ? 0 : (completedTasks * 100.0) / totalTasks;
+                var name = user.Name;
+                var email = user.Email;
+
+                response.Add(new UserTaskReportResponse
+                { Name = name, CompletionPercentage = completionPercent, TotalTasks = totalTasks, Email = email });
+
+            }
+            return response;
+
+        }
     }
+
 }

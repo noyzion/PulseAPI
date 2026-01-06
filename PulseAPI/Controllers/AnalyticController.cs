@@ -30,5 +30,10 @@ namespace PulseAPI.Controllers
         {
             return Ok(await _service.GetNTopUsersAsync(limit));
         }
+        [HttpGet("users/taskReport")]
+        public async Task<IActionResult> GetTaskReport()
+        {
+            return Ok(await _service.GetUserTaskReportAsync());
+        }
     }
 }
