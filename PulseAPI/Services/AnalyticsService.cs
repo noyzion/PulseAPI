@@ -1,4 +1,5 @@
 ﻿using PulseAPI.Client;
+using PulseAPI.Models.Enums;
 using PulseAPI.Models.External;
 using PulseAPI.Models.Responses;
 
@@ -52,6 +53,30 @@ namespace PulseAPI.Services
                 UserCount = users.Count,
                 MostActiveUser = mostActiveUser
             };
+        }
+
+        public async Task<List<UserActivityResponse>> GetUsersActivityAsync()
+        {
+            var posts = await _client.GetPostsAsync();
+            var users = await _client.GetUsersAsync();
+            var postsCountPerUsers = posts.GroupBy(u => u.UserId).ToDictionary(g => g.Key, g => g.Count());
+            List<UserActivityResponse> response = new List<UserActivityResponse>();
+            foreach (var user in users)
+            {
+                int postsCount = postsCountPerUsers.ContainsKey(user.Id) ? postsCountPerUsers[user.Id] : 0;
+                ActivityLevel userLevel = GetActivityLevel(postsCount);
+                response.Add(new UserActivityResponse { 
+                    UserId = user.Id, UserName = user.Name, ActivityLevelUser = userLevel, PostsCount = postsCount});
+
+            }
+            return response;
+        }
+
+        private ActivityLevel GetActivityLevel(int postsCount)
+        {
+            if (postsCount >= 0 && postsCount < 3) return ActivityLevel.Low;
+            else if (postsCount >= 3 && postsCount < 6) return ActivityLevel.Medium;
+            else return ActivityLevel.High;
         }
     }
 }

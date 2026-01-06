@@ -15,10 +15,16 @@ namespace PulseAPI.Controllers
             _service = service;
         }
 
-        [HttpGet("/global")]
+        [HttpGet("global")]
         public async Task<IActionResult> GetGlobalAnalytics()
         {
            return Ok(await _service.GetGlobalStatsAsync());
         }
+        [HttpGet("users/activity")]
+        public async Task<IActionResult> GetUsersActivityLevel()
+        {
+            return Ok(await _service.GetUsersActivityAsync());
+        }
+
     }
 }
