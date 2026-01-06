@@ -15,9 +15,9 @@ Aggregated statistics across the entire system:
 
 ### 👤 User Activity Levels
 Classifies each user based on activity:
-- **Low** – 0–2 posts
-- **Medium** – 3–5 posts
-- **High** – 6+ posts
+- **Low** - 0–2 posts
+- **Medium** - 3–5 posts
+- **High** - 6+ posts
 
 Includes users with zero posts.
 
