@@ -25,6 +25,10 @@ namespace PulseAPI.Controllers
         {
             return Ok(await _service.GetUsersActivityAsync());
         }
-
+        [HttpGet("users/top/{limit}")]
+        public async Task<IActionResult> GetNTopUser(int limit)
+        {
+            return Ok(await _service.GetNTopUsersAsync(limit));
+        }
     }
 }

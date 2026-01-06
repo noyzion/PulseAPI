@@ -78,5 +78,32 @@ namespace PulseAPI.Services
             else if (postsCount >= 3 && postsCount < 6) return ActivityLevel.Medium;
             else return ActivityLevel.High;
         }
+
+        public async Task<List<UserActivityResponse>> GetNTopUsersAsync(int limit)
+        {
+
+            var posts = await _client.GetPostsAsync();
+            var users = await _client.GetUsersAsync();
+            var postsCountPerUsers = posts.GroupBy(p => p.UserId).ToDictionary(g => g.Key, g => g.Count());
+            var topUsers = postsCountPerUsers.OrderByDescending(x => x.Value).Take(limit);
+
+            List<UserActivityResponse> response = new();
+
+            foreach (var kvp in topUsers)
+            {
+                var user = users.First(u => u.Id == kvp.Key);
+                int postsCount = kvp.Value;
+
+                response.Add(new UserActivityResponse
+                {
+                    UserId = user.Id,
+                    UserName = user.Name,
+                    PostsCount = postsCount,
+                    ActivityLevelUser = GetActivityLevel(postsCount)
+                });
+            }
+            
+            return response;
+        }
     }
 }
