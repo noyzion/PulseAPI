@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PulseAPI.Services;
+using System.Net;
 
 namespace PulseAPI.Controllers
 {
@@ -17,8 +18,7 @@ namespace PulseAPI.Controllers
         [HttpGet("/global")]
         public async Task<IActionResult> GetGlobalAnalytics()
         {
-           var analystic = await _service.GetGlobalStatsAsync();
-            return Ok(analystic);
+           return Ok(await _service.GetGlobalStatsAsync());
         }
     }
 }

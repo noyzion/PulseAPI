@@ -34,5 +34,17 @@ namespace PulseAPI.Client
             var comments = await _httpClient.GetFromJsonAsync<List<ExternalCommentDto>>($"/comments?postId={postId}");
             return comments ?? new List<ExternalCommentDto>();
         }
+
+        public async Task<List<ExternalCommentDto>> GetCommentsAsync()
+        {
+            var comments = await _httpClient.GetFromJsonAsync<List<ExternalCommentDto>>($"/comments");
+            return comments ?? new List<ExternalCommentDto>();
+        }
+
+        public async Task<List<ExternalPostDto>> GetPostsAsync()
+        {
+            var posts = await _httpClient.GetFromJsonAsync<List<ExternalPostDto>>($"/posts");
+            return posts ?? new List<ExternalPostDto>();
+        }
     }
 }
