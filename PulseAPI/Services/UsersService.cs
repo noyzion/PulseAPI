@@ -20,16 +20,10 @@ namespace PulseAPI.Services
             if (user == null) return null;
 
             var posts = await _client.GetPostsByUserIdAsync(userId);
-            int countComments = 0;
-
-            foreach(var post in posts)
-            {
-                var comments = await _client.GetCommentsByPostIdAsync(post.Id);
-
-                countComments += comments.Count;
-            }
-
-            int postsCount = posts.Count;
+            var comments = await _client.GetCommentsAsync();
+            var postIds = posts.Select(p => p.Id).ToHashSet();
+            int countComments = comments.Count(c => postIds.Contains(c.PostId));
+            var postsCount = posts.Count;
             double avgCommentsPerPost = postsCount > 0 ? (double)countComments / postsCount : 0;
 
             UserSummaryResponse response = new UserSummaryResponse
